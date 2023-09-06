@@ -1,4 +1,6 @@
+import { ActionFunctionArgs, Form, redirect } from "react-router-dom";
 import { CartItemType } from "../cart/Cart";
+import { createOrder } from "../../services/apiRestaurant";
 
 // https://uibakery.io/regex-library/phone-number
 const isValidPhone = (str: string) =>
@@ -38,7 +40,7 @@ export default function CreateOrder() {
     <div>
       <h2>Ready to order? Let's go!</h2>
 
-      <form>
+      <Form method="POST" action="/order/new">
         <div>
           <label>First Name</label>
           <input type="text" name="customer" required />
@@ -70,9 +72,43 @@ export default function CreateOrder() {
         </div>
 
         <div>
+          {/* To pass the cart field */}
+          <input type="hidden" name="cart" value={JSON.stringify(cart)} />
           <button>Order now</button>
         </div>
-      </form>
+      </Form>
     </div>
   );
+}
+
+type RawOrderFormData = {
+  cart: string;
+  customer: string;
+  phone: string;
+  priority?: string;
+  address: string;
+};
+
+export type ProcessedOrderFormData = {
+  customer: string;
+  phone: string;
+  address: string;
+  cart: CartItemType[];
+  priority: boolean;
+};
+
+export async function createOrderAction(args: ActionFunctionArgs) {
+  // Extract the form data
+  const formData = Object.fromEntries(
+    await args.request.formData()
+  ) as RawOrderFormData;
+  // Process the form data
+  const processedOrder: ProcessedOrderFormData = {
+    ...formData,
+    cart: JSON.parse(formData.cart) as CartItemType[],
+    priority: formData.priority === "on",
+  };
+  // Perform the POST request
+  const order = await createOrder(processedOrder);
+  return redirect(`/order/${order.id}`);
 }

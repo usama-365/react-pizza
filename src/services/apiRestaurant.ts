@@ -1,4 +1,5 @@
 import { PizzaType } from "../features/menu/MenuItem";
+import { ProcessedOrderFormData } from "../features/order/CreateOrder";
 import { OrderType } from "../features/order/Order";
 
 const API_URL = "https://react-fast-pizza-api.onrender.com/api";
@@ -18,10 +19,6 @@ export async function getMenu() {
   return data;
 }
 
-type OrderAPIResponseType = {
-  data: OrderType[];
-};
-
 type GETOrderResponseType = {
   status: string;
   data: OrderType;
@@ -35,7 +32,12 @@ export async function getOrder(id: string) {
   return data;
 }
 
-export async function createOrder(newOrder: string) {
+type POSTOrderResponseType = {
+  status: string;
+  data: OrderType;
+};
+
+export async function createOrder(newOrder: ProcessedOrderFormData) {
   try {
     const res = await fetch(`${API_URL}/order`, {
       method: "POST",
@@ -46,7 +48,7 @@ export async function createOrder(newOrder: string) {
     });
 
     if (!res.ok) throw Error();
-    const { data } = (await res.json()) as OrderAPIResponseType;
+    const { data } = (await res.json()) as POSTOrderResponseType;
     return data;
   } catch {
     throw Error("Failed creating your order");

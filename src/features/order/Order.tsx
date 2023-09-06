@@ -7,21 +7,16 @@ import {
   formatCurrency,
   formatDate,
 } from "../../utils/helpers";
-import { CartItemType } from "../cart/Cart";
+import { ProcessedOrderFormData } from "./CreateOrder";
 
 export type OrderType = {
   id: string;
-  customer: string;
-  phone: string;
   status?: boolean;
-  address: string;
-  priority: boolean;
   estimatedDelivery: string;
-  cart: CartItemType[];
   position: string;
   orderPrice: number;
   priorityPrice: number;
-};
+} & ProcessedOrderFormData;
 
 export default function Order() {
   const order = useLoaderData() as OrderType;
