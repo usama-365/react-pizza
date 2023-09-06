@@ -22,11 +22,16 @@ type OrderAPIResponseType = {
   data: OrderType[];
 };
 
+type GETOrderResponseType = {
+  status: string;
+  data: OrderType;
+};
+
 export async function getOrder(id: string) {
   const res = await fetch(`${API_URL}/order/${id}`);
   if (!res.ok) throw Error(`Couldn't find order #${id}`);
 
-  const { data } = (await res.json()) as OrderAPIResponseType;
+  const { data } = (await res.json()) as GETOrderResponseType;
   return data;
 }
 
