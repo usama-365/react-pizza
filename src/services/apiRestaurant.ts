@@ -3,12 +3,9 @@ import { OrderType } from "../features/order/Order";
 
 const API_URL = "https://react-fast-pizza-api.onrender.com/api";
 
-type MenuAPIResponseType = {
+type GETAllPizzaResponseType = {
+  status: string;
   data: PizzaType[];
-};
-
-type OrderAPIResponseType = {
-  data: OrderType[];
 };
 
 export async function getMenu() {
@@ -17,9 +14,13 @@ export async function getMenu() {
   // fetch won't throw error on 400 errors (e.g. when URL is wrong), so we need to do it manually. This will then go into the catch block, where the message is set
   if (!res.ok) throw Error("Failed getting menu");
 
-  const { data } = (await res.json()) as MenuAPIResponseType;
+  const { data } = (await res.json()) as GETAllPizzaResponseType;
   return data;
 }
+
+type OrderAPIResponseType = {
+  data: OrderType[];
+};
 
 export async function getOrder(id: string) {
   const res = await fetch(`${API_URL}/order/${id}`);
