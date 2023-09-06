@@ -1,4 +1,10 @@
-import { ActionFunctionArgs, Form, redirect } from "react-router-dom";
+import {
+  ActionFunctionArgs,
+  Form,
+  redirect,
+  useActionData,
+  useNavigation,
+} from "react-router-dom";
 import { CartItemType } from "../cart/Cart";
 import { createOrder } from "../../services/apiRestaurant";
 
@@ -32,9 +38,15 @@ const fakeCart: CartItemType[] = [
   },
 ];
 
+type CreateOrderActionErrorType = {
+  phone?: string;
+};
+
 export default function CreateOrder() {
   // const [withPriority, setWithPriority] = useState(false);
   const cart = fakeCart;
+  const isSubmitting = useNavigation().state === "submitting";
+  const formErrors = useActionData() as CreateOrderActionErrorType | undefined;
 
   return (
     <div>
@@ -51,6 +63,7 @@ export default function CreateOrder() {
           <div>
             <input type="tel" name="phone" required />
           </div>
+          {formErrors?.phone && <p>{formErrors.phone}</p>}
         </div>
 
         <div>
@@ -74,7 +87,9 @@ export default function CreateOrder() {
         <div>
           {/* To pass the cart field */}
           <input type="hidden" name="cart" value={JSON.stringify(cart)} />
-          <button>Order now</button>
+          <button disabled={isSubmitting}>
+            {isSubmitting ? "Loading..." : "Order now"}
+          </button>
         </div>
       </Form>
     </div>
@@ -108,6 +123,12 @@ export async function createOrderAction(args: ActionFunctionArgs) {
     cart: JSON.parse(formData.cart) as CartItemType[],
     priority: formData.priority === "on",
   };
+  // Validation
+  const errors: CreateOrderActionErrorType = {};
+  if (!isValidPhone(processedOrder.phone))
+    errors.phone =
+      "Please give us your correct phone. We might need it to contact you.";
+  if (Object.keys(errors).length > 0) return errors;
   // Perform the POST request
   const order = await createOrder(processedOrder);
   return redirect(`/order/${order.id}`);
