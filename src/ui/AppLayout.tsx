@@ -6,12 +6,14 @@ import LoadingIndicator from "./LoadingIndicator";
 export default function AppLayout() {
   const isLoading = useNavigation().state === "loading";
   return (
-    <div className="layout">
+    <div className="grid-col-2 grid h-screen grid-rows-[auto_1fr_auto]">
       {isLoading && <LoadingIndicator />}
       <Header />
-      <main>
-        <Outlet />
-      </main>
+      <div className="overflow-y-scroll">
+        <main className="mx-auto max-w-3xl">
+          <Outlet />
+        </main>
+      </div>
       <CartOverview />
     </div>
   );
