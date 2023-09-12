@@ -11,7 +11,7 @@ import { createOrder } from "../../services/apiRestaurant";
 // https://uibakery.io/regex-library/phone-number
 const isValidPhone = (str: string) =>
   /^\+?\d{1,4}?[-.\s]?\(?\d{1,3}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}$/.test(
-    str
+    str,
   );
 
 const fakeCart: CartItemType[] = [
@@ -87,7 +87,10 @@ export default function CreateOrder() {
         <div>
           {/* To pass the cart field */}
           <input type="hidden" name="cart" value={JSON.stringify(cart)} />
-          <button disabled={isSubmitting}>
+          <button
+            disabled={isSubmitting}
+            className="inline-block rounded-lg bg-yellow-400 px-4 py-3 font-semibold uppercase tracking-wide text-stone-800 transition-colors duration-300 hover:bg-yellow-300 focus:bg-yellow-300 focus:outline-none focus:ring focus:ring-yellow-300 focus:ring-offset-2 disabled:cursor-not-allowed"
+          >
             {isSubmitting ? "Loading..." : "Order now"}
           </button>
         </div>
@@ -115,7 +118,7 @@ export type ProcessedOrderFormData = {
 export async function createOrderAction(args: ActionFunctionArgs) {
   // Extract the form data
   const formData = Object.fromEntries(
-    await args.request.formData()
+    await args.request.formData(),
   ) as RawOrderFormData;
   // Process the form data
   const processedOrder: ProcessedOrderFormData = {
